@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
+
 import static org.junit.Assert.assertEquals;
 
 public class ThreeSumTest {
@@ -99,5 +100,32 @@ public class ThreeSumTest {
         System.out.println("triples: " + Arrays.toString(triples));
         assertEquals(4, triples.length);
         assertEquals(4, new ThreeSumCubic(ints).getTriples().length);
+    }
+
+    @Test
+    public void testPerformance() {
+        int[] sizes = {100, 200, 400, 800, 1600};  // 不同的 N
+        for (int N : sizes) {
+            int[] nums = generateRandomArray(N);
+
+            Stopwatch timer = new Stopwatch();
+            ThreeSum.threeSumCubic(nums);
+            double cubicTime = timer.elapsedTime();
+
+            timer = new Stopwatch();
+            ThreeSum.threeSumQuadratic(nums);
+            double quadraticTime = timer.elapsedTime();
+
+            System.out.println("N = " + N + " | Cubic: " + cubicTime + "s | Quadratic: " + quadraticTime + "s");
+        }
+    }
+
+    private int[] generateRandomArray(int N) {
+        Random rand = new Random();
+        int[] arr = new int[N];
+        for (int i = 0; i < N; i++) {
+            arr[i] = rand.nextInt(2000) - 1000;
+        }
+        return arr;
     }
 }

@@ -21,6 +21,7 @@ public class ThreeSumCubicTest {
         };
         Triple[] actual = threeSum.getTriples();
         assertArrayEquals(expected, actual);
+
     }
 
     /**

@@ -57,7 +57,6 @@ public class ThreeSumQuadratic implements ThreeSum {
                  triples.add(new Triple(a[left], a[j], a[right]));
                  left++;
                  right--;
-                 // Skip duplicates
                  while (left < j && a[left] == a[left - 1]) left++;
                  while (right > j && a[right] == a[right + 1]) right--;
              } else if (sum < 0) {
