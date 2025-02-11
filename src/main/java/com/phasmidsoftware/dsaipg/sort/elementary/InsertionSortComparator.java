@@ -66,12 +66,24 @@ public class InsertionSortComparator<X> extends SortWithHelper<X> {
         final Helper<X> helper = getHelper();
 
         for (int i = from + 1; i < to; i++) {
-            int j = i;
-            while (j > from && helper.swapStableConditional(xs, j - 1, j)) {
-                j--; // 继续向前交换
+            X current = xs[i];
+            int j = i - 1;
+
+            // 使用 swapStableConditional 方法进行交换
+            while (j >= from && helper.compare(xs[j], current) > 0) {
+                // 使用 swapStableConditional 进行交换，并判断是否交换
+                if (!helper.swapStableConditional(xs, j + 1)) {
+                    break;  // 如果没有交换，跳出循环
+                }
+                j--;  // 继续检查前一个元素
             }
+            // 插入当前元素到正确位置
+            xs[j + 1] = current;
         }
     }
+
+
+
 
 
 
