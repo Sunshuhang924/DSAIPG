@@ -13,7 +13,6 @@ import java.util.function.UnaryOperator;
  * Class which is able to time the running of functions.
  */
 public class Timer {
-
     /**
      * Run the given function n times, once per "lap" and then return the result of calling meanLapTime().
      * The clock will be running when the method is invoked and when it is quit.
@@ -35,7 +34,6 @@ public class Timer {
         resume();
         return result;
     }
-
     /**
      * Run the given functions n times, once per "lap" and then return the mean lap time.
      *
@@ -50,22 +48,32 @@ public class Timer {
         return repeat(n, false, supplier, function, null, null);
     }
 
-    /**
-     * Pause (without counting a lap); run the given functions n times while being timed, i.e., once per "lap", and finally return the result of calling meanLapTime().
-     *
-     * @param n            the number of repetitions.
-     * @param warmup       true if this is in the warmup phase.
-     * @param supplier     a function which supplies a T value.
-     * @param function     a function T=>U and which is to be timed.
-     * @param preFunction  a function which pre-processes a T value and which precedes the call of function, but which is not timed (may be null). The result of the preFunction, if any, is also a T.
-     * @param postFunction a function which consumes a U and which succeeds the call of function, but which is not timed (may be null).
-     * @param <T>          the type which is supplied by supplier, processed by prefunction (if any), and passed in to function.
-     * @param <U>          the type which is the result of function and the input to postFunction (if any).
-     * @return the average milliseconds per repetition.
-     */
     public <T, U> double repeat(int n, boolean warmup, Supplier<T> supplier, Function<T, U> function, UnaryOperator<T> preFunction, Consumer<U> postFunction) {
         // TO BE IMPLEMENTED : note that the timer is running when this method is called and should still be running when it returns.
-         return 0;
+        if (warmup) {
+            // 做热身，如果 warmup 为 true，我们可以跳过前几次的计时
+            for (int i = 0; i < n / 5; i++) {  // 比如前 1/5 次不计时
+                T value = supplier.get();
+                if (preFunction != null) value = preFunction.apply(value);
+                U result = function.apply(value);
+                if (postFunction != null) postFunction.accept(result);
+                lap();  // 记录不计时的时间
+            }
+        }
+
+        // 执行实际的计时操作
+        for (int i = (warmup ? n / 5 : 0); i < n; i++) {
+            T value = supplier.get();
+            if (preFunction != null) value = preFunction.apply(value);
+            U result = function.apply(value);
+            if (postFunction != null) postFunction.accept(result);
+            lap();  // 记录每次调用的时间
+        }
+
+        pause();  // 停止计时
+        final double result = meanLapTime();  // 计算并返回平均时间
+        resume();  // 恢复计时
+        return result;
         // END SOLUTION
     }
 
@@ -239,10 +247,9 @@ public class Timer {
      * @return the number of ticks for the system clock. Currently defined as nano time.
      */
     private static long getClock() {
-        // TO BE IMPLEMENTED 
-         return 0;
-        // END SOLUTION
+        return System.nanoTime(); // 返回当前时间，单位是纳秒
     }
+
 
     /**
      * NOTE: (Maintain consistency) There are two system methods for getting the clock time.
@@ -253,7 +260,7 @@ public class Timer {
      */
     private static double toMillisecs(long ticks) {
         // TO BE IMPLEMENTED 
-         return 0;
+        return ticks / 1_000_000.0;
         // END SOLUTION
     }
 
