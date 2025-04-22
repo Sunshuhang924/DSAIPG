@@ -8,40 +8,28 @@ import static org.junit.Assert.assertTrue;
 public class TicTacToeNodeTest {
 
     @Test
-    public void winsAndPlayouts() {
-        TicTacToe.TicTacToeState state = new TicTacToe().new TicTacToeState(Position.parsePosition("X . 0\nX O .\nX . 0", TicTacToe.X));
+    public void winsAndPlayouts() {//*
+        TicTacToeState state = new TicTacToeState(TicTacToePosition.parsePosition("X . 0\nX O .\nX . 0", TicTacToe.X));
         TicTacToeNode node = new TicTacToeNode(state);
+        MCTS mcts = new MCTS(node,2);
+        mcts.traverse(node);
+        mcts.traverse(node);
         assertTrue(node.isLeaf());
-        assertEquals(2, node.wins());
-        assertEquals(1, node.playouts());
+        assertEquals(2, node.val());
+        assertEquals(3, node.vis());
     }
 
     @Test
     public void state() {
-        TicTacToe.TicTacToeState state = new TicTacToe().new TicTacToeState();
+        TicTacToeState state = new TicTacToeState();
         TicTacToeNode node = new TicTacToeNode(state);
         assertEquals(state, node.state());
     }
 
     @Test
-    public void white() {
-        TicTacToe.TicTacToeState state = new TicTacToe().new TicTacToeState();
+    public void black() {
+        TicTacToeState state = new TicTacToeState();
         TicTacToeNode node = new TicTacToeNode(state);
-        assertTrue(node.white());
-    }
-
-    @Test
-    public void children() {
-        // no tests yet
-    }
-
-    @Test
-    public void addChild() {
-        // no tests yet
-    }
-
-    @Test
-    public void backPropagate() {
-        // no tests yet
+        assertTrue(node.black());
     }
 }

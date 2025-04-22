@@ -5,7 +5,9 @@
 package com.phasmidsoftware.dsaipg.projects.mcts.core;
 
 import com.phasmidsoftware.dsaipg.adt.bqs.UnorderedIterator;
+import com.phasmidsoftware.dsaipg.projects.mcts.tictactoe.TicTacToeMove;
 
+import java.nio.file.FileSystemNotFoundException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
@@ -79,6 +81,7 @@ public interface State<G extends Game> {
      */
     default Iterator<Move<G>> moveIterator(int player) {
         Collection<Move<G>> moves = moves(player);
+
         if (moves == null) throw new RuntimeException("moves returned null");
         else return UnorderedIterator.createDeterministic(moves, random());
     }
@@ -92,7 +95,10 @@ public interface State<G extends Game> {
      */
     default Move<G> chooseMove(int player) {
         Iterator<Move<G>> iterator = moveIterator(player);
+
         if (iterator.hasNext()) return iterator.next();
         throw new RuntimeException("empty move iterator");
     }
+
+    Position<G> position();
 }

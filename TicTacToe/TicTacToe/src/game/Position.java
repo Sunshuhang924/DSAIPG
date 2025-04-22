@@ -1,8 +1,4 @@
-/*
- * Copyright (c) 2024. Robin Hillyard
- */
-
-package com.phasmidsoftware.dsaipg.projects.mcts.tictactoe;
+package game;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,14 +11,14 @@ import java.util.Optional;
  */
 public class Position {
 
-    /**
+	/**
      * Parse a string of X, O, and . to form a Position.
      *
      * @param grid the grid represented as a String.
      * @param last the last player.
      * @return a Position.
      */
-    static Position parsePosition(final String grid, final int last) {
+    public static Position parsePosition(final String grid, final int last) {
         int[][] matrix = new int[gridSize][gridSize];
         int count = 0;
         String[] rows = grid.split("\\n", gridSize);
@@ -64,9 +60,8 @@ public class Position {
         if (player == last) throw new RuntimeException("consecutive moves by same player: " + player);
         int[][] matrix = copyGrid();
         if (matrix[x][y] < 0) {
-            // TO BE IMPLEMENTED 
-             return null;
-            // END SOLUTION
+            matrix[x][y] = player;
+            return new Position(matrix, count + 1, player);
         }
         throw new RuntimeException("Position is occupied: " + x + ", " + y);
     }
@@ -82,16 +77,13 @@ public class Position {
         for (int i = 0; i < gridSize; i++)
             for (int j = 0; j < gridSize; j++)
                 if (grid[i][j] < 0)
-                    // TO BE IMPLEMENTED 
-         ;
-        // END SOLUTION
+                    result.add(new int[]{i, j});
         return result;
     }
 
     /**
      * Method to yield a copy of this Position but reflected.
-     * <p>
-     * TESTME
+     *
      *
      * @param axis the axis about which to reflect.
      * @return a new Position.
@@ -100,10 +92,10 @@ public class Position {
         int[][] matrix = copyGrid();
         switch (axis) {
             case 0:
-                for (int j = 0; j < gridSize; j++) swap(matrix, 0, j, 2, j); // middle row
+                for (int j = 0; j < gridSize; j++) swap(matrix, 0, j, 2, j); 
                 break;
             case 1:
-                for (int i = 0; i < gridSize; i++) swap(matrix, i, 0, i, 2); // middle column
+                for (int i = 0; i < gridSize; i++) swap(matrix, i, 0, i, 2); 
                 break;
             default:
                 throw new RuntimeException("reflect not implemented for " + axis);
@@ -113,7 +105,7 @@ public class Position {
 
     /**
      * Method to rotate this Position by 90 degrees clockwise.
-     * TESTME
+     * 
      *
      * @return a new Position which is rotated from this.
      */
@@ -144,11 +136,47 @@ public class Position {
      * @return true if there are three cells in a line that are the same and equal to the last player.
      */
     boolean threeInARow() {
-        // TO BE IMPLEMENTED 
-         return false;
-        // END SOLUTION
+        int[] tmp;
+        boolean inArow;
+        for (int i = 0; i < gridSize; i++) {
+            tmp = projectRow(i);
+            inArow = true;
+            for (int j = 0; j < gridSize; j++) {
+                if (tmp[j] != xxx[j]) {
+                    inArow = false;
+                    break;
+                }
+            }
+            if (inArow) return true;
+            inArow = true;
+            tmp = projectCol(i);
+            for (int j = 0; j < gridSize; j++) {
+                if (tmp[j] != xxx[j]) {
+                    inArow = false;
+                    break;
+                }
+            }
+            if (inArow) return true;
+        }
+        tmp = projectDiag(false);
+        inArow = true;
+        for (int j = 0; j < gridSize; j++) {
+            if (tmp[j] != xxx[j]) {
+                inArow = false;
+                break;
+            }
+        }
+        if (inArow) return true;
+        tmp = projectDiag(true);
+        inArow = true;
+        for (int j = 0; j < gridSize; j++) {
+            if (tmp[j] != xxx[j]) {
+                inArow = false;
+                break;
+            }
+        }
+        return inArow;
     }
-
     /**
      * Project row i.
      *
@@ -211,6 +239,17 @@ public class Position {
         return sb.toString();
     }
 
+    public static int[] Getmove(Position prevA, Position prevB) {
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                if (prevA.grid[i][j] != prevB.grid[i][j]) {
+                    return new int[]{i, j};
+                }
+            }
+        }
+        throw new RuntimeException("The State of Next Movement is the same of Previous.");
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -236,7 +275,7 @@ public class Position {
         return Arrays.deepHashCode(grid);
     }
 
-    Position(int[][] grid, int count, int last) {
+    public Position(int[][] grid, int count, int last) {
         this.grid = grid;
         this.count = count;
         this.last = last;
@@ -258,24 +297,15 @@ public class Position {
         };
     }
 
-    /**
-     * TESTME
-     *
-     * @param matrix the matrix to be operated on.
-     * @param i1     first row.
-     * @param j1     first column.
-     * @param i2     second row.
-     * @param j2     second column.
-     */
     private void swap(int[][] matrix, int i1, int j1, int i2, int j2) {
         int temp = matrix[i1][j1];
         matrix[i1][j1] = matrix[i2][j2];
         matrix[i2][j2] = temp;
     }
 
-    private final int[][] grid;
-    final int last;
+    public final int[][] grid;
+    public final int last;
     private final int count;
-    private final static int gridSize = 3;
+    private static final int gridSize = 3;
     private final int[] xxx;
 }

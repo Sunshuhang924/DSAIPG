@@ -4,6 +4,10 @@
 
 package com.phasmidsoftware.dsaipg.projects.mcts.core;
 
+import com.phasmidsoftware.dsaipg.projects.mcts.tictactoe.TicTacToe;
+import com.phasmidsoftware.dsaipg.projects.mcts.tictactoe.TicTacToeState;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -30,7 +34,7 @@ public interface Node<G extends Game> {
      *
      * @return true if this node represents a "white" move; false for "black."
      */
-    boolean white();
+    boolean black();
 
     /**
      * Method to yield the children of this Node.
@@ -47,14 +51,12 @@ public interface Node<G extends Game> {
         if (isLeaf()) return;
         if (children().isEmpty()) {
             addChildren(state());
-            backPropagate();
         } else throw new RuntimeException("exploration done already for " + this);
     }
 
     /**
      * This method sets the number of wins and playouts according to the children states.
      */
-    void backPropagate();
 
     /**
      * Method to add a child to this Node.
@@ -66,16 +68,27 @@ public interface Node<G extends Game> {
     /**
      * @return the score for this Node and its descendents a win is worth 2 points, a draw is worth 1 point.
      */
-    int wins();
+    int val();
 
     /**
      * @return the number of playouts evaluated (including this node). A leaf node will have a playouts value of 1.
      */
-    int playouts();
+    int vis();
 
     private void addChildren(final State<G> state) {
         for (Iterator<Move<G>> it = state.moveIterator(state.player()); it.hasNext(); )
             addChild(state.next(it.next()));
     }
 
+    void initializeRoot();
+
+    void setUpdateValue(int i);
+
+    Node<G> unvisited();
+
+    Node<G> childWithHighestUCT();
+
+    boolean fullyExpanded();
+    double C = 1.42;
+    
 }
